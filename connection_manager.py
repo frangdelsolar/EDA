@@ -76,7 +76,7 @@ class ConnectionManager:
 
 
     async def process_your_turn(self, request_data):
-        challenge = self.get_challenge(request_data['data']['game_id'])
+        challenge = self.get_or_create_challenge(request_data['data']['game_id'])
         if randint(0, 10) > 3:
             await challenge.process_move(request_data, self)
         else:
@@ -100,7 +100,7 @@ class ConnectionManager:
         return challenge
 
 
-    def get_challenge(self, challenge_id):
+    def get_or_create_challenge(self, challenge_id):
         for challenge in self.challenges:
             if challenge.id == challenge_id:
                 return challenge
