@@ -1,24 +1,18 @@
 import config
 import utils
-import random
 
 class Pawn:
     def __init__(self, row, col, side):
         self.row = row
         self.col = col
         self.side = side
-        self.base = 0
-        self.target = config.ROWS - 1
-
-        if self.side == 'S':
-            self.base = config.ROWS - 1 
-            self.target = 0
+        self.base = 0 if self.side == 'N' else config.ROWS - 1 
+        self.target = config.ROWS - 1 if self.side == 'N' else 0
+        self.path = None
 
     def move(self, state):
-        
-        moves = self.bfs(state)
-
-        if len(moves) > 2:
+        moves = self.path = self.bfs(state)
+        if len(moves) >= 2:
             move = {
                 'from_row': moves[0]['row'] // 2,
                 'from_col': moves[0]['col'] // 2,
@@ -44,10 +38,10 @@ class Pawn:
 
             if cell['row'] == self.target:
                 # print('Arrived')
-                path = get_path(cell, visited)
+                self.path = get_shortest_path(cell, visited)
                 # show_state(state, path)
-                path.reverse()
-                return path
+                self.path.reverse()
+                return self.path
 
             for move in self.get_valid_moves(state, cell):
                 if not move_included(move, visited) and not move_included(move, queue):
@@ -154,7 +148,7 @@ def get_next_available(from_pos, to_pos, from_side, state):
             return cell
     return None
 
-def get_path(cell, moves, path = []):
+def get_shortest_path(cell, moves, path = []):
     if cell == None:
         return path
 
@@ -164,7 +158,7 @@ def get_path(cell, moves, path = []):
     if cell['parent'] >= 0:
         prev_cell = moves[cell['parent']]
 
-    return get_path(prev_cell, moves, path)
+    return get_shortest_path(prev_cell, moves, path)
 
 
 def move_included(move, moves):

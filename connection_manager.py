@@ -60,7 +60,7 @@ class ConnectionManager:
     async def process_game_over(self, request_data):
         print('Processing game over')
         with open('logs/game_over.txt', 'a') as file:
-            file.writelines(json.dumps(request_data))
+            file.write(json.dumps(request_data))
             file.close()
 
 
