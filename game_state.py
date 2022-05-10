@@ -49,12 +49,16 @@ class GameState:
         move_2 = self.player_pawns[1].move(self.state)
         move_3 = self.player_pawns[2].move(self.state)
 
+        # paths = []
+
         move = None
         if move_1:
             move = move_1
-
+            # paths += self.player_pawns[0].path
         if move:
             if move_2:
+                # paths += self.player_pawns[1].path
+
                 if move_2['distance'] < move['distance']:
                     move = move_2
         else:
@@ -64,11 +68,15 @@ class GameState:
         
         if move:
             if move_3:
+                # paths += self.player_pawns[2].path
+
                 if move_3['distance'] < move['distance']:
                     move = move_3
         else:
             if move_3:
                 move = move_3
+
+        # self.show(paths)
 
         if move:
             move.pop('distance', None)

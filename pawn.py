@@ -58,62 +58,81 @@ class Pawn:
     def get_valid_moves(self, state, pos=None):
         if not pos:
             pos = {'row': self.row, 'col': self.col}
-        
-        old_state = copy.deepcopy(state)
-        pos_copy = pos
 
         neighbours = []
         
-        cursor = pos.copy()
+        
         for i in range(4):
-            cursor['col'] += 1 # mover un casillero a la derecha
-            if not is_cell_wall(cursor, state):
-                cursor['col'] += 1 # comprobar siguiente col 6
-                if not is_cell_engaged(cursor, state):
-                    neighbours.append({'row': pos['row'], 'col': pos['col'] + 2 })
-                    # No seguir avanzando         
-                else:
-                    cursor['col'] += 1 # g
-                    if not is_cell_wall(cursor, state): # puedo seguir avanzando?
-                        cursor['col'] += 1
-                        if not is_cell_engaged(cursor, state): # saltar obstáculo
-                            neighbours.append({'row': pos['row'], 'col': pos['col'] + 4 })
-                        cursor['col'] -= 1
+            cursor = pos.copy()
+            
+            # Si hay pared contigua, salir de iteración
+            cursor['col'] += 1 
+            if is_cell_wall(cursor, state):
+                cursor = pos.copy()
+                state, pos, cursor, neighbours = utils.rotate(state, pos, cursor, neighbours)
+                continue
+            
+            cursor = pos.copy()
+            cursor['col'] += 2
+            # Si la contigua está vacía 
+            if not is_cell_engaged(cursor, state):
+                neighbours = append_if_not_in({'row': pos['row'], 'col': pos['col'] + 2 }, neighbours)
+                cursor = pos.copy()
+                state, pos, cursor, neighbours = utils.rotate(state, pos, cursor, neighbours)
+                continue
+            else:
+                cursor['col'] += 1 
+                # Si se puede saltar
+                if not is_cell_wall(cursor, state):
+                    cursor['col'] += 1
+                    if not is_cell_engaged(cursor, state):
+                        neighbours = append_if_not_in({'row': pos['row'], 'col': pos['col'] + 4}, neighbours)
+                        cursor = pos.copy()
+                        state, pos, cursor, neighbours = utils.rotate(state, pos, cursor, neighbours)
+                        continue
 
-                    else: # mirar a los costados
-                        cursor['col'] -= 1 # 6
-
-                        #ir hacia arriba
-                        cursor['row'] -= 1 #re c6
-
-                        if not is_cell_wall(cursor, state): # puedo seguir avanzando?
-                            cursor['row'] -= 1 #r4 c6
-                            if not is_cell_engaged(cursor, state): # saltar obstáculo
-                                neighbours.append({'row': pos['row'] - 2, 'col': pos['col'] + 2})
-                            cursor['row'] += 1
-                        cursor['row'] += 1
-                        
-                        #ir hacia abajo
-                        cursor['row'] += 1
-                        if not is_cell_wall(cursor, state): # puedo seguir avanzando?
-                            cursor['row'] += 1
-                            if not is_cell_engaged(cursor, state): # saltar obstáculo
-                                neighbours.append({'row': pos['row'] + 2, 'col': pos['col'] + 2 })
-                            cursor['row'] -= 1
-                        cursor['row'] -= 1
+            cursor = pos.copy()
+            cursor['col'] += 3 
+            # Si se puede hacer salto en L
+            if is_cell_wall(cursor, state):
                 cursor['col'] -= 1
-            cursor['col'] -= 1
-
+                cursor['row'] -= 1
+                if not is_cell_wall(cursor, state): 
+                    cursor['row'] -= 1
+                    if not is_cell_engaged(cursor, state):
+                        neighbours = append_if_not_in({'row': pos['row'] - 2, 'col': pos['col'] + 2 }, neighbours)
+ 
+                cursor = pos.copy()
+                cursor['col'] += 2 
+                cursor['row'] += 1 
+                if not is_cell_wall(cursor, state):
+                    cursor['row'] += 1
+                    if not is_cell_engaged(cursor, state):
+                        neighbours = append_if_not_in({'row': pos['row'] + 2, 'col': pos['col'] + 2 }, neighbours)
+            cursor = pos.copy()
             state, pos, cursor, neighbours = utils.rotate(state, pos, cursor, neighbours)
-        return neighbours
 
+        # Clean up those that are off limits
+        definitive = []
+        for n in neighbours:
+            if utils.within_boundaries(n):
+                definitive.append(n)
+        return definitive
 
+def append_if_not_in(item, array):
+    if item not in array:
+        array.append(item)
+    return array
 
 def is_cell_wall(cell, state):
-    return state[cell['row']][cell['col']] in ['|', '*', '-']
+    if utils.within_boundaries(cell):
+        return state[cell['row']][cell['col']] in ['|', '*', '-']
+    return True
 
 def is_cell_engaged(cell, state):
-    return state[cell['row']][cell['col']] in ['S', 'N']
+    if utils.within_boundaries(cell):
+        return state[cell['row']][cell['col']] in ['S', 'N']
+    return True
 
 def get_shortest_path(cell, moves, path = []):
     if cell == None:

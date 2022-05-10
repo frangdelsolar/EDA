@@ -23,7 +23,7 @@ class Challenge:
 
 
     async def process_wall(self, request_data, connection):
-        self.game.update(request_data['data'])
+        # self.game.update(request_data['data'])
         self.game.show()
         await connection.send(
             'wall',
