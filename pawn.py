@@ -1,5 +1,6 @@
 import config
 import utils
+import copy
 
 class Pawn:
     def __init__(self, row, col, side):
@@ -52,101 +53,67 @@ class Pawn:
         print('No hay camino de salida')
         return []
  
+
+
     def get_valid_moves(self, state, pos=None):
         if not pos:
             pos = {'row': self.row, 'col': self.col}
+        
+        old_state = copy.deepcopy(state)
+        pos_copy = pos
 
         neighbours = []
-        vicinity = [
-            [-2, 0],
-            [0, -2],
-            [0, 2],
-            [2, 0]
-        ]
-        for i, j in vicinity:
-            cell = {
-                'row': i + pos['row'], 
-                'col': j + pos['col']
-            }
-            
-            if utils.within_boundaries(cell):
-                # check if there's another pawn there
-                if is_cell_engaged(cell, state):
-                    # pawn can jump
-                    cell = get_next_available(pos, cell, self.side, state)
+        
+        cursor = pos.copy()
+        for i in range(4):
+            cursor['col'] += 1 # mover un casillero a la derecha
+            if not is_cell_wall(cursor, state):
+                cursor['col'] += 1 # comprobar siguiente col 6
+                if not is_cell_engaged(cursor, state):
+                    neighbours.append({'row': pos['row'], 'col': pos['col'] + 2 })
+                    # No seguir avanzando         
+                else:
+                    cursor['col'] += 1 # g
+                    if not is_cell_wall(cursor, state): # puedo seguir avanzando?
+                        cursor['col'] += 1
+                        if not is_cell_engaged(cursor, state): # saltar obstáculo
+                            neighbours.append({'row': pos['row'], 'col': pos['col'] + 4 })
+                        cursor['col'] -= 1
 
-                if cell:
-                    if not is_blocked(pos, cell, state):
-                        neighbours.append(cell) 
+                    else: # mirar a los costados
+                        cursor['col'] -= 1 # 6
 
+                        #ir hacia arriba
+                        cursor['row'] -= 1 #re c6
+
+                        if not is_cell_wall(cursor, state): # puedo seguir avanzando?
+                            cursor['row'] -= 1 #r4 c6
+                            if not is_cell_engaged(cursor, state): # saltar obstáculo
+                                neighbours.append({'row': pos['row'] - 2, 'col': pos['col'] + 2})
+                            cursor['row'] += 1
+                        cursor['row'] += 1
+                        
+                        #ir hacia abajo
+                        cursor['row'] += 1
+                        if not is_cell_wall(cursor, state): # puedo seguir avanzando?
+                            cursor['row'] += 1
+                            if not is_cell_engaged(cursor, state): # saltar obstáculo
+                                neighbours.append({'row': pos['row'] + 2, 'col': pos['col'] + 2 })
+                            cursor['row'] -= 1
+                        cursor['row'] -= 1
+                cursor['col'] -= 1
+            cursor['col'] -= 1
+
+            state, pos, cursor, neighbours = utils.rotate(state, pos, cursor, neighbours)
         return neighbours
 
-def is_blocked(from_pos, to_pos, state):
-    if from_pos['row'] == to_pos['row']:
-        if to_pos['col'] > from_pos['col']:
-            for col in range(from_pos['col'], to_pos['col']):
-                if is_cell_wall({'row': to_pos['row'], 'col': col}, state):
-                    return True
-        else:
-            for col in range(from_pos['col'], to_pos['col'], -1):
-                if is_cell_wall({'row': to_pos['row'], 'col': col}, state):
-                    return True
 
-    if from_pos['col'] == to_pos['col']:
-        if to_pos['row'] > from_pos['row']:
-            for row in range(from_pos['row'], to_pos['row']):
-                if is_cell_wall({'row': row, 'col': to_pos['col']}, state):
-                    return True
-        else:
-            for row in range(from_pos['row'], to_pos['row'], -1):
-                if is_cell_wall({'row': row, 'col': to_pos['col']}, state):
-                    return True
-    return False
 
 def is_cell_wall(cell, state):
     return state[cell['row']][cell['col']] in ['|', '*', '-']
 
 def is_cell_engaged(cell, state):
     return state[cell['row']][cell['col']] in ['S', 'N']
-
-def get_next_available(from_pos, to_pos, from_side, state):
-    if state[to_pos['row']][to_pos['col']] == from_side:
-        return None
-
-    # obstacle to the left
-    if from_pos['row'] == to_pos['row'] and from_pos['col'] == to_pos['col'] + 2:
-        cell = {
-            'row': to_pos['row'],
-            'col': to_pos['col'] - 2
-        }
-    
-    # obstacle to the right
-    elif from_pos['row'] == to_pos['row'] and from_pos['col'] == to_pos['col'] - 2:
-        cell = {
-            'row': to_pos['row'],
-            'col': to_pos['col'] + 2
-        }
-    
-    # obstacle to the bottom
-    elif from_pos['col'] == to_pos['col'] and from_pos['row'] == to_pos['row'] + 2:
-        cell = {
-            'row': to_pos['row'] - 2,
-            'col': to_pos['col']
-        }
-    
-    # obstacle to the top
-    elif from_pos['col'] == to_pos['col'] and from_pos['row'] == to_pos['row'] - 2:
-        cell = {
-            'row': to_pos['row'] + 2,
-            'col': to_pos['col']
-        }
-
-    else: 
-        return None
-    
-    if utils.within_boundaries(cell) and not is_cell_engaged(cell, state):
-            return cell
-    return None
 
 def get_shortest_path(cell, moves, path = []):
     if cell == None:
@@ -169,25 +136,23 @@ def move_included(move, moves):
 
 
 def show_state(state, array):
-    complete = lambda s: str(s).ljust(3)
-    for i, row in enumerate(state):
+    board = [[i for i in row] for row in state]
+    if array:
+        for move in array:
+            board[move['row']][move['col']] = 'v'
+
+    headers = '0a1b2c3d4e5f6g7h8'
+    print('    ', end='')
+    for ch in headers:
+        print(ch + '  ', end='')
+    print()
+    print('   --------------------------------------------------')
+    for i, row in enumerate(board):
+        print(headers[i] + ' | ', end='')
         for j, item in enumerate(row):
-            printed = False
-
-            if item != ' ': # in ['|', '-', '*']:
-                print(f' {item} ', end=" ")
-                printed = True
-
+            if item != ' ' or item != 0:
+                print(item, end="")
             else:
-                for pos in array:
-                    if pos['row'] == i and pos['col'] == j:
-                        
-                        if 'depth' in pos:
-                            print(complete(pos['depth']), end=" ")
-                        else:
-                            print(complete('v'), end=" ")
-                        printed = True
-            if not printed:
-                print(' . ', end=' ')
+                print(' ', end="")
+            print('  ', end='')
         print()
-    
