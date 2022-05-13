@@ -120,7 +120,7 @@ class TestGameState(unittest.TestCase):
         self.assertFalse(is_cell_engaged_by_opponent(pos_empty, self.decoded, s_side))
 
     def test_rotate_matrix(self):
-        print('Test Game State Rotate Matrix')
+        # print('Test Game State Rotate Matrix')
         m1 = [
             [1, 2, 3, 4],
             [5, 6, 7, 8],

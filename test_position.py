@@ -19,10 +19,13 @@ class TestPosition(unittest.TestCase):
         pos1 = Position(0, 0)
         pos2 = Position(0, 0)
         pos3 = Position(1, 0)
-
+        none = None
+        
         self.assertEqual(pos1, pos2)
         self.assertNotEqual(pos1, pos3)
         self.assertNotEqual(pos2, pos3)
+        self.assertNotEqual(pos1, none)
+
 
     def test_up(self):
         # print('Test position up')
@@ -119,21 +122,36 @@ class TestPosition(unittest.TestCase):
         self.assertEqual(p2.col, 2)
         self.assertEqual(len(array), len(rotated))
 
-
-
-
     def test_get_shortest_path(self):
-        print('Test get shortest path')
-        # p1 = Position(0, 0)
-        # p1.depth = 0
-        # p2 = Position(1, 0)
-        # p2.depth = 1
-        # pos = [
-            
-        # ]
-        print('*******Hay que implementarlo********')
-        return False
+        # print('Test get shortest path')
+        path = []
+        pos = Position(0, 0)
+        pos.depth = 0
+        pos.parent = -1
+        moves = [pos]
+        shortest = get_shortest_path(pos, moves, path)
+        result = [pos]
+        self.assertEqual(shortest, result)
+    
+    def test_get_shortest_path_2(self):
+        # print('Test get shortest path 2')
+        pos = Position(0, 0)
+        pos.depth = 0
+        pos.parent = -1
 
+        pos2 = Position(1, 0)
+        pos2.depth = 1
+        pos2.parent = 0
+
+        path = []
+        moves = [pos, pos2]
+        result = [pos2, pos]
+        
+        shortest = get_shortest_path(pos2, moves, path)
+        self.assertEqual(shortest, result)
+
+
+        
 
 if __name__ == '__main__':
     unittest.main()

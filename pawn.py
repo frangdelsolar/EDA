@@ -98,17 +98,26 @@ def bfs(pawn, state):
     queue = [copy.deepcopy(pawn.pos)]   
 
     while len(queue) > 0:
-        current = queue.pop(0)
-        visited.append(current)
-        print('Current', current)
+        cell = queue.pop(0)
 
-        moves = get_valid_moves(current, pawn.side, state)
-        print('Moves', moves)
+        visited.append(cell)
+        parent = visited.index(cell)
+        depth = cell.depth + 1
 
-        for move in moves:
+        if cell.row == pawn.target:
+            # print('Arrived')
+            path = get_shortest_path(cell, visited, path)
+            # show_state(state, path)
+            pawn.distance = path[0].depth
+            path.reverse()
+            pawn.path = path
+            return path
+
+        for move in get_valid_moves(cell, pawn.side, state):
             if not move in visited and not move in queue:
+                move.parent = parent
+                move.depth = depth 
                 queue.append(move)
-                print('Queue', queue)
-
-    print('No hay camino de salida')
+    
+    print("There's no way out for this soldier.")
     return path

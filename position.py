@@ -13,7 +13,7 @@ class Position:
         return f'({self.row}, {self.col})'
 
     def __eq__(self, o: object) -> bool:
-        return self.row == o.row and self.col == o.col
+        return (o is not None) and (self.row == o.row and self.col == o.col)
 
     def up(self, amt=1):
         self.row -= amt
@@ -45,12 +45,13 @@ def append_pos(pos, array):
     return array
 
 def get_shortest_path(cell, moves, path):
+    # print(cell, cell is None)
     if cell == None:
         return path
 
     path.append(cell)
 
-    prev_cell= None
+    prev_cell = None
     if cell.parent >= 0:
         prev_cell = moves[cell.parent]
 
