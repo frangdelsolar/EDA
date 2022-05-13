@@ -1,109 +1,64 @@
 import config
+import utils
 from pawn import Pawn
 
-
 class GameState:
-    def __init__(self):
-        self.state = [[0] * config.COLS for i in range(config.ROWS)]
-        self.player = '' # S or N
-        self.opponent = '' # S or N
-        self.player_pawns = []
-        self.opponent_pawns = []
+    def __init__(self, data):
+        self.board = data['board']
+        self.player_1 = data['player_1']
+        self.player_2 = data['player_2']
+        self.side = data['side']
+        self.remaining_moves = data['remaining_moves']
+        self.turn_token = data['turn_token']
+        self.game_id = data['game_id']
 
-    def update(self, data):
-        self.state = self.decode_board(data['board'])
-        self.player = data['side']
-        self.opponent = 'N' if data['side'] == 'S' else 'S'
-        self.player_pawns = self.create_pawns(self.player)
-        self.opponent_pawns = self.create_pawns(self.opponent)
-
-    def create_pawns(self, side):
-        pawns = []
-        for i, row in enumerate(self.state):
-            for j, item in enumerate(row):
-                if item == side:
-                    pawn = Pawn(i, j, side)
-                    pawns.append(pawn)
-        return pawns
-    
-    def decode_board(self, encoded):
-        state = [[0] * config.COLS for i in range(config.ROWS)]
-        for i in range(len(encoded)):
-            row = i // config.ROWS
-            col = i % config.COLS
-            state[row][col] = encoded[i]
-        return state
-    
-    def encode_board(self, state=None):
-        if not state:
-            state = self.state
-
-        encoded = ''
-        for i in range(len(state)):
-            for j in range(len(state[i])):
-                encoded += state[i][j]
-        return encoded
-
-    def move(self):
-        move_1 = self.player_pawns[0].move(self.state)
-        move_2 = self.player_pawns[1].move(self.state)
-        move_3 = self.player_pawns[2].move(self.state)
-
-        # paths = []
-
-        move = None
-        if move_1:
-            move = move_1
-            # paths += self.player_pawns[0].path
-        if move:
-            if move_2:
-                # paths += self.player_pawns[1].path
-
-                if move_2['distance'] < move['distance']:
-                    move = move_2
-        else:
-            if move_2:
-                move = move_2
-        
-        
-        if move:
-            if move_3:
-                # paths += self.player_pawns[2].path
-
-                if move_3['distance'] < move['distance']:
-                    move = move_3
-        else:
-            if move_3:
-                move = move_3
-
-        # self.show(paths)
-
-        if move:
-            move.pop('distance', None)
-        return move
+        self.state = decode_board(self.board)
+        self.opponent = 'S' if self.side == 'N' else 'N'
+        self.player_pawns = create_pawns(self.side, self.state)
+        self.opponent_pawns = create_pawns(self.opponent, self.state)
 
 
-    def show(self, paths=None):
-        # os.system('CLS')
+def within_boundaries(pos):
+    if not pos.row in range(0, config.ROWS): return False
+    if not pos.col in range(0, config.COLS): return False
+    return True
 
-        board = [[i for i in row] for row in self.state]
-        if paths:
-            for move in paths:
-                if move['depth'] > 0:
-                    board[move['row']][move['col']] = move['depth']
+def is_cell_wall(pos, state):
+    if within_boundaries(pos):
+        return state[pos.row][pos.col] in ['|', '*', '-']
+    return True
 
-        headers = '0a1b2c3d4e5f6g7h8'
-        print('    ', end='')
-        for ch in headers:
-            print(ch + '  ', end='')
-        print()
-        print('   --------------------------------------------------')
-        for i, row in enumerate(board):
-            print(headers[i] + ' | ', end='')
-            for j, item in enumerate(row):
-                if item != ' ':
-                    print(item, end="")
-                else:
-                    print(' ', end="")
-                print('  ', end='')
-            print()
+def is_cell_engaged(pos, state):
+    if within_boundaries(pos):
+        return state[pos.row][pos.col] in ['S', 'N']
+    return True
+
+def is_cell_engaged_by_opponent(pos, state, own_side):
+    other_side = 'N' if own_side == 'S' else 'S'
+    if within_boundaries(pos):
+        return state[pos.row][pos.col] == other_side
+    return True
+
+def create_pawns(side, state):
+    pawns = []
+    for i, row in enumerate(state):
+        for j, item in enumerate(row):
+            if item == side:
+                p = Pawn(i, j, side)
+                pawns.append(p)
+    return pawns
+
+def decode_board(board):
+    state = [[None for c in range(config.COLS)] for r in range(config.ROWS)]
+    for i, val in enumerate(board):
+        r = i // config.ROWS
+        c = i % config.COLS
+        state[r][c] = val
+    return state
+
+def encode_board(board):
+    result = ''
+    for i, row in enumerate(board):
+        for j, item in enumerate(row):
+            result += item
+    return result

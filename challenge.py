@@ -5,17 +5,41 @@ from game_state import GameState
 class Challenge:
     def __init__(self, id):
         self.id = id
-        self.game = GameState()
 
+    def __repr__(self) -> str:
+        return f'Challenge {self.id}'
 
     async def process_move(self, request_data, connection):
-        self.game.update(request_data['data'])
-        self.game.show()
-        move = self.game.move()
+        game = GameState(request_data['data'])
+        # move = game.move()
+
+        # {
+        #     "event": "your_turn",
+        #     "data": {
+        #         "player_2": "uno",
+        #         "player_1": "dos",
+        #         "score_2": 0.0,
+        #         "walls": 10.0,
+        #         "score_1": 0.0,
+        #         "side": "N",
+        #         "remaining_moves": 50.0,
+        #         "board": "  N     N     N                                                                                                                                                                                                                                                                   S     S     S  ",
+        #         "turn_token": "087920d0-0e6b-4716-9e77-add550a006aa",
+        #         "game_id": "ab16e71c-caeb-11eb-975e-0242c0a80004"
+        #     }
+        # }
+
+        # move = {
+            #     'game_id': request_data['data']['game_id'],
+            #     'turn_token': request_data['data']['turn_token'],
+            #     'from_row': from_row,
+            #     'from_col': from_col,
+            #     'to_row': to_row,
+            #     'to_col': to_col,
+            # }
 
         if move:
-            move['game_id'] = self.id
-            move['turn_token'] = request_data['data']['turn_token']
+
             await connection.send('move', move)
 
         else:
@@ -23,8 +47,7 @@ class Challenge:
 
 
     async def process_wall(self, request_data, connection):
-        # self.game.update(request_data['data'])
-        self.game.show()
+
         await connection.send(
             'wall',
             {

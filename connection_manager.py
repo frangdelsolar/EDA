@@ -1,6 +1,7 @@
 import json
 import websockets
 import time
+import os
 from random import randint
 from challenge import Challenge
 
@@ -33,6 +34,7 @@ class ConnectionManager:
         while True:
             try:
                 request = await self.websocket.recv()
+                # os.system('CLS')
                 print(f"< {request} >")
                 request_data = json.loads(request)
                 
@@ -43,6 +45,7 @@ class ConnectionManager:
                     await self.process_game_over(request_data)
 
                 if request_data['event'] == 'challenge':
+                    # if request_data['data']['opponent'] == 'frangdelsolar@gmail.com':
                     await self.process_challenge(request_data)
 
                 if request_data['event'] == 'your_turn':
@@ -77,7 +80,7 @@ class ConnectionManager:
 
     async def process_your_turn(self, request_data):
         challenge = self.get_or_create_challenge(request_data['data']['game_id'])
-        if randint(0, 10) > 3:
+        if randint(0, 10) > 2:
             await challenge.process_move(request_data, self)
         else:
             await challenge.process_wall(request_data, self)
