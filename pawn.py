@@ -1,5 +1,4 @@
 import config
-import utils
 import copy
 from position import (
     Position, 
@@ -37,8 +36,6 @@ def get_valid_moves(pos, side, state):
         cursor.reset(i+1, state)
         neighbours = rotate_moves(neighbours, state)
         
-        print('Iteracion ', i, ' Cursor ', cursor)
-
         # Si hay pared contigua, salir de iteración
         cursor.right()
         if is_cell_wall(cursor, state):
@@ -48,11 +45,35 @@ def get_valid_moves(pos, side, state):
         if not is_cell_engaged(cursor, state):
             neighbours = append_pos(copy.deepcopy(cursor), neighbours)
             continue
+        else:
+            if is_cell_engaged_by_opponent(cursor, state, side):
+                cursor.right()
+                if not is_cell_wall(cursor, state):
+                    cursor.right()
+                    if not is_cell_engaged(cursor, state):
+                        neighbours = append_pos(copy.deepcopy(cursor), neighbours)
+                        continue
+        
+        cursor.reset(i+1, state)
+        cursor.right(2)
+        if is_cell_engaged_by_opponent(cursor, state, side):
+            cursor.right()
+            if is_cell_wall(cursor, state) and cursor.col < config.COLS:
+                cursor.left()
+                cursor.up()
+                if not is_cell_wall(cursor, state) and cursor.col < config.COLS-1:
+                    cursor.up()
+                    if not is_cell_engaged(cursor, state):
+                        neighbours = append_pos(copy.deepcopy(cursor), neighbours)
 
+            cursor.reset(i+1, state)
+            cursor.right(2)
+            cursor.down()
 
-
-
-
+            if not is_cell_wall(cursor, state) and cursor.col < config.COLS-1:
+                cursor.down()
+                if not is_cell_engaged(cursor, state):
+                    neighbours = append_pos(copy.deepcopy(cursor), neighbours)
 
     # Clean up those that are off limits
     definitive = []
