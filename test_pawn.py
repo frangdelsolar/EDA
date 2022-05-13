@@ -178,6 +178,34 @@ class TestPawn(unittest.TestCase):
         # print(moves)
         self.assertEqual(moves, result)
 
+    def test_get_valid_moves_two_pawns(self):
+        # print('Test Pawn Get Valid For Two Pawns')
+        self.game.update_from_decoded(boards.BOARD_TEST)
+        
+        p1 = self.game.player_pawns[0]
+        moves1 = get_valid_moves(p1.pos, p1.side, self.game.state)
+
+        p2 = self.game.player_pawns[1]
+        moves2 = get_valid_moves(p2.pos, p2.side, self.game.state)
+
+        self.assertNotEqual(id(moves1), id(moves2))
+
+    def test_get_valid_moves_in_iterator(self):
+        # print('Test Pawn Get Valid Moves 10')
+        self.game.update_from_decoded(boards.BOARD_TEST)
+        
+        p1 = self.game.player_pawns[0]
+
+        moves1 = get_valid_moves(p1.pos, p1.side, self.game.state)
+        # self.game.show(moves1)
+
+        p1.pos.right(2)
+        
+        moves2 = get_valid_moves(p1.pos, p1.side, self.game.state)
+        # self.game.show(moves2)
+ 
+        self.assertNotEqual(moves1, moves2)
+
     # def test_bfs(self):
     #     print('Test Pawn Breadth First Search Algorithm')
     #     self.game.update_from_decoded(boards.BOARD_TEST)

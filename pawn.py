@@ -36,7 +36,8 @@ def get_valid_moves(pos, side, state):
     # Rotate matrix four times to find the free cells
     for i in range(4):
         state = rotate_matrix(state)
-        cursor.reset(i+1, state)
+        cursor = copy.deepcopy(pos)
+        cursor.rotate(state, i+1)
         neighbours = rotate_moves(neighbours, state)
         
         # Si hay pared contigua, salir de iteración
@@ -57,7 +58,8 @@ def get_valid_moves(pos, side, state):
                         neighbours = append_pos(copy.deepcopy(cursor), neighbours)
                         continue
         
-        cursor.reset(i+1, state)
+        cursor = copy.deepcopy(pos)
+        cursor.rotate(state, i+1)
         cursor.right(2)
         if is_cell_engaged_by_opponent(cursor, state, side):
             cursor.right()
@@ -69,7 +71,8 @@ def get_valid_moves(pos, side, state):
                     if not is_cell_engaged(cursor, state):
                         neighbours = append_pos(copy.deepcopy(cursor), neighbours)
 
-            cursor.reset(i+1, state)
+            cursor = copy.deepcopy(pos)
+            cursor.rotate(state, i+1)
             cursor.right(2)
             cursor.down()
 
@@ -95,33 +98,17 @@ def bfs(pawn, state):
     queue = [copy.deepcopy(pawn.pos)]   
 
     while len(queue) > 0:
-        cell = queue.pop(0)
-        print(queue, cell, pawn.target)
+        current = queue.pop(0)
+        visited.append(current)
+        print('Current', current)
 
-        visited.append(cell)
-        parent = visited.index(cell)
-        depth = cell.depth + 1
+        moves = get_valid_moves(current, pawn.side, state)
+        print('Moves', moves)
 
-
-        # if cell.row == pawn.target:
-        #     # print('Arrived')
-        #     path = get_shortest_path(cell, visited)
-        #     # show_state(state, path)
-        #     pawn.distance = path[0].depth
-        #     path.reverse()
-        #     pawn.path = path
-        #     return path
-
-        valid_moves = get_valid_moves(copy.deepcopy(cell), pawn.side, state)
-        print('Valid moves for ', cell, valid_moves, id(valid_moves))
-        for move in valid_moves:
-            # valid_moves = get_valid_moves(move, pawn.side, state)
-
-            print('Valid move', move)
-            if not move in queue:
-        #         move.parent = parent
-        #         move.depth = depth 
+        for move in moves:
+            if not move in visited and not move in queue:
                 queue.append(move)
-    
+                print('Queue', queue)
+
     print('No hay camino de salida')
     return path

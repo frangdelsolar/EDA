@@ -63,20 +63,6 @@ class TestPosition(unittest.TestCase):
         self.assertEqual(pos.row, r)
         self.assertEqual(pos.col, c - amt)
 
-    def test_reset(self):
-        # print('Test position reset')
-        row = 5
-        col = 5
-        pos = Position(row, col)
-
-        pos.up()
-        self.assertNotEqual(pos.row, row)
-        self.assertEqual(pos.col, col)
-
-        pos.reset()
-        self.assertEqual(pos.row, row)
-        self.assertEqual(pos.col, col)
-
     def test_rotate(self):
         # print('Test Position Matrix Rotation')
         m = [

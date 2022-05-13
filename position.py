@@ -6,7 +6,6 @@ class Position:
     def __init__(self, row, col):
         self.row = row
         self.col = col
-        self.origin = [row, col]
         self.depth = None
         self.parent = None
 
@@ -28,18 +27,12 @@ class Position:
     def left(self, amt=1):
         self.col -= amt
 
-    def reset(self, rotation=0, matrix=None):
-        self.row = self.origin[0]
-        self.col = self.origin[1]
+    def rotate(self, matrix, rotation=1):
         for i in range(rotation):
-            self.rotate(matrix)
-
-    def rotate(self, matrix):
-        r = self.row
-        c = self.col
-
-        self.row = c
-        self.col = len(matrix[0]) - 1 - r
+            r = self.row
+            c = self.col
+            self.row = c
+            self.col = len(matrix[0]) - 1 - r
 
 def rotate_moves(moves, matrix):
     for move in moves:
