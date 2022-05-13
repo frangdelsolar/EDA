@@ -7,6 +7,8 @@ class Position:
         self.row = row
         self.col = col
         self.origin = [row, col]
+        self.depth = None
+        self.parent = None
 
     def __repr__(self) -> str:
         return f'({self.row}, {self.col})'
@@ -49,12 +51,14 @@ def append_pos(pos, array):
         array.append(pos)
     return array
 
-def rotate_matrix(grid):
-    grid_copy = copy.deepcopy(grid)
-    for i in range(len(grid)):
-        for j in range(len(grid[i])):
-            row = j
-            col = len(grid[i])-1-i
-            grid_copy[row][col] = grid[i][j]
+def get_shortest_path(cell, moves, path):
+    if cell == None:
+        return path
 
-    return grid_copy
+    path.append(cell)
+
+    prev_cell= None
+    if cell.parent >= 0:
+        prev_cell = moves[cell.parent]
+
+    return get_shortest_path(prev_cell, moves, path)

@@ -6,6 +6,7 @@ from connection_manager import ConnectionManager
 class TestConnectionManager(unittest.TestCase):
 
     def test_append_challenge(self):
+        # print('Test Connection Manager Append Challenge')
         connection = ConnectionManager()
         self.assertEqual(len(connection.challenges), 0)
 
@@ -14,6 +15,7 @@ class TestConnectionManager(unittest.TestCase):
         self.assertEqual(len(connection.challenges), 2)
 
     def test_get_or_create_challenge(self):
+        # print('Test Connection Manager Get Or Create Challenge')
         chosen_id = '124'
         connection = ConnectionManager()
         connection.append_challenge('123')

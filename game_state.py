@@ -1,3 +1,4 @@
+import copy
 import config
 from pawn import Pawn
 
@@ -102,3 +103,13 @@ def encode_board(board):
         for j, item in enumerate(row):
             result += item
     return result
+
+def rotate_matrix(grid):
+    grid_copy = copy.deepcopy(grid)
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            row = j
+            col = len(grid[i])-1-i
+            grid_copy[row][col] = grid[i][j]
+
+    return grid_copy

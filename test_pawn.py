@@ -19,9 +19,9 @@ class TestPawn(unittest.TestCase):
             "game_id": "ab16e71c-caeb-11eb-975e-0242c0a80004"
         }
     game = GameState(data)
-
     
     def test_constructor(self):
+        # print('Test Pawn Constructor')
         row = 0
         col = 5
         side = 'N'
@@ -37,6 +37,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(pawn.target, target)
 
     def test_repr(self):
+        # print('Test Pawn Repr')
         row = 0
         col = 1
         side = 'N'
@@ -46,6 +47,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(p.__repr__(), result)
 
     def test_get_valid_moves_cross(self):
+        # print('Test Pawn Get Valid Moves 1')
         self.game.update_from_decoded(boards.BOARD_PAWN)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -60,6 +62,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_cross_edge(self):
+        # print('Test Pawn Get Valid Moves 2')
         self.game.update_from_decoded(boards.BOARD_PAWN_EDGE)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -72,6 +75,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_cross_edge_2(self):
+        # print('Test Pawn Get Valid Moves 3')
         self.game.update_from_decoded(boards.BOARD_PAWN_EDGE_2)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -84,6 +88,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_cross_sorrounded(self):
+        # print('Test Pawn Get Valid Moves 4')
         self.game.update_from_decoded(boards.BOARD_PAWN_OBSTACLE)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -93,6 +98,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_cross_jump(self):
+        # print('Test Pawn Get Valid Moves 5')
         self.game.update_from_decoded(boards.BOARD_PAWN_PAWN)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -107,6 +113,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_cross_jump_edge(self):
+        # print('Test Pawn Get Valid Moves 6')
         self.game.update_from_decoded(boards.BOARD_PAWN_PAWN_EDGE)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -119,6 +126,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_cross_jump_edge_sorrounded(self):
+        # print('Test Pawn Get Valid Moves 7')
         self.game.update_from_decoded(boards.BOARD_PAWN_OBSTACLE_PAWN)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -128,6 +136,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_corner_1(self):
+        # print('Test Pawn Get Valid Moves 8')
         self.game.update_from_decoded(boards.BOARD_PAWN_PAWN_OBSTACLE_1)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -143,6 +152,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_corner_2(self):
+        # print('Test Pawn Get Valid Moves 9')
         self.game.update_from_decoded(boards.BOARD_PAWN_PAWN_OBSTACLE_2)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -157,6 +167,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(moves, result)
 
     def test_get_valid_moves_corner_3(self):
+        # print('Test Pawn Get Valid Moves 10')
         self.game.update_from_decoded(boards.BOARD_PAWN_PAWN_OBSTACLE_OBSTACLE)
         p = self.game.player_pawns[0]
         moves = get_valid_moves(p.pos, p.side, self.game.state)
@@ -166,6 +177,19 @@ class TestPawn(unittest.TestCase):
         # self.game.show(moves)
         # print(moves)
         self.assertEqual(moves, result)
+
+    # def test_bfs(self):
+    #     print('Test Pawn Breadth First Search Algorithm')
+    #     self.game.update_from_decoded(boards.BOARD_TEST)
+    #     p = self.game.player_pawns[0]
+    #     moves = bfs(p, self.game.state)
+    #     result = [
+    #         Position(6, 10)
+    #     ]
+    #     self.game.show(moves)
+    #     print('BFS', moves)
+    #     self.assertEqual(moves, result)
+    #     return True
 
 
 
