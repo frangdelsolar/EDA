@@ -4,7 +4,6 @@ import board_states as boards
 from position import Position
 
 
-
 class TestGameState(unittest.TestCase):
     data = {
             "player_2": "uno",
@@ -53,6 +52,13 @@ class TestGameState(unittest.TestCase):
         self.assertEqual(len(self.game.player_pawns), 3)
         self.assertEqual(len(self.game.opponent_pawns), 3)
 
+    def test_update_from_decoded(self):
+        self.game.update_from_decoded(boards.BOARD_PAWN)
+        self.assertEqual(len(self.game.player_pawns), 1)
+        self.assertEqual(len(self.game.opponent_pawns), 0)
+        self.assertEqual(self.game.state, boards.BOARD_PAWN)
+        self.game = GameState(self.data)
+    
     def test_decode_board(self):
         result = decode_board(self.encoded)
         self.assertEqual(self.decoded, result)

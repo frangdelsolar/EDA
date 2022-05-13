@@ -1,6 +1,5 @@
 .env
+.coverage
 *.pyc
-
-auxi.py
 
 logs/*
