@@ -10,7 +10,7 @@ class Position:
         self.parent = None
 
     def __repr__(self) -> str:
-        return f'({self.row}, {self.col})'
+        return f'[{self.row}, {self.col}, {self.depth}, {self.parent}]'
 
     def __eq__(self, o: object) -> bool:
         return (o is not None) and (self.row == o.row and self.col == o.col)
@@ -45,14 +45,12 @@ def append_pos(pos, array):
     return array
 
 def get_shortest_path(cell, moves, path):
-    # print(cell, cell is None)
-    if cell == None:
+    if cell is None:
         return path
-
     path.append(cell)
 
     prev_cell = None
-    if cell.parent >= 0:
+    if cell.parent > 0:
         prev_cell = moves[cell.parent]
 
     return get_shortest_path(prev_cell, moves, path)

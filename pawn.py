@@ -88,7 +88,7 @@ def get_valid_moves(pos, side, state):
             definitive.append(n)
     return definitive
 
-def bfs(pawn, state):
+def bfs(pawn, game):
     path = []
     visited = []
     depth = 0
@@ -105,15 +105,14 @@ def bfs(pawn, state):
         depth = cell.depth + 1
 
         if cell.row == pawn.target:
-            # print('Arrived')
             path = get_shortest_path(cell, visited, path)
-            # show_state(state, path)
             pawn.distance = path[0].depth
             path.reverse()
             pawn.path = path
             return path
-
-        for move in get_valid_moves(cell, pawn.side, state):
+            
+        moves = get_valid_moves(cell, pawn.side, game.state)
+        for move in moves:
             if not move in visited and not move in queue:
                 move.parent = parent
                 move.depth = depth 

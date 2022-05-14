@@ -34,7 +34,7 @@ class GameState:
         if moves:
             for move in moves:
                 # if move['depth'] > 0:
-                board[move.row][move.col] = 'o'
+                board[move.row][move.col] = move.depth
 
         headers = '0a1b2c3d4e5f6g7h8'
         print('    ', end='')

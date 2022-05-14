@@ -206,19 +206,23 @@ class TestPawn(unittest.TestCase):
  
         self.assertNotEqual(moves1, moves2)
 
-    # def test_bfs(self):
-    #     print('Test Pawn Breadth First Search Algorithm')
-    #     self.game.update_from_decoded(boards.BOARD_TEST)
-    #     p = self.game.player_pawns[0]
-    #     moves = bfs(p, self.game.state)
-    #     result = [
-    #         Position(6, 10)
-    #     ]
-    #     self.game.show(moves)
-    #     print('BFS', moves)
-    #     self.assertEqual(moves, result)
-    #     return True
+    def test_bfs(self):
+        # print('Test Pawn Breadth First Search Algorithm')
+        self.game.update_from_decoded(boards.BOARD_TEST)
+        p = self.game.player_pawns[0]
+        moves = bfs(p, self.game)
+        # self.game.show(moves)
+        self.assertEqual(len(moves), 9)
+        return True
 
+    def test_bfs_2(self):
+        print('Test Pawn Breadth First Search Algorithm 2')
+        self.game.update_from_decoded(boards.BOARD_PAWN_PAWN_OBSTACLE_OBSTACLE)
+        p = self.game.player_pawns[0]
+        moves = bfs(p, self.game)
+        self.game.show(moves)
+        self.assertEqual(len(moves), 9)
+        return True
 
 
 if __name__ == '__main__':
