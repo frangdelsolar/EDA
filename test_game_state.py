@@ -52,6 +52,8 @@ class TestGameState(unittest.TestCase):
         self.assertEqual(self.game.opponent, 'S')
         self.assertEqual(len(self.game.player_pawns), 3)
         self.assertEqual(len(self.game.opponent_pawns), 3)
+        self.assertEqual(len(self.game.player_distances), 3)
+        self.assertEqual(len(self.game.opponent_distances), 3)
 
     def test_update_from_decoded(self):
         # print('Test Game State Update from Decoded')
@@ -73,7 +75,10 @@ class TestGameState(unittest.TestCase):
 
     def test_create_pawns(self):
         # print('Test Game State Create Pawns')
-        pawns = create_pawns('N', self.decoded)
+        pawns = create_pawns('N', self.game)
+        p1 = pawns[0]
+        self.assertEqual(len(p1.path), 9)
+        self.assertEqual(p1.distance, 9)
         self.assertEqual(len(pawns), 3)
 
     def test_within_boundaries(self):
@@ -138,6 +143,137 @@ class TestGameState(unittest.TestCase):
         m1_r = rotate_matrix(m1)
 
         self.assertEqual(m1_r, result)
+    
+    def test_get_pawn_distances(self):
+        # print('Test Game State Get Pawn Distances')
+        p1 = Pawn(0, 0, 'S')
+        p1.distance = 9
+
+        p2 = Pawn(0, 4, 'S')
+        p2.distance = 6
+
+        p3 = Pawn(4, 5, 'S')
+        p3.distance = 5
+
+        pawns = [p1, p2, p3]
+
+        distances = get_pawn_distances(pawns)
+        result = [9, 6, 5]
+
+        self.assertEqual(distances, result)
+
+    def test_move_shortest(self):
+        # print('Test Game State Move')
+        move = self.game.move_shortest()
+        result = {
+            'from_row': 0, 
+            'from_col': 1, 
+            'to_row': 0, 
+            'to_col': 0, 
+            'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004', 
+            'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
+        }
+        self.assertEqual(move, result)
+
+    def test_get_board_score(self):
+        # print('Test Game State Score')
+        score = get_board_score(self.game)
+        self.assertEqual(score, 0)
+        
+    def test_get_board_score_2(self):
+        # print('Test Game State Score 2')
+        data = {
+            "player_2": "uno",
+            "player_1": "dos",
+            "score_2": 0.0,
+            "walls": 10.0,
+            "score_1": 0.0,
+            "side": "N",
+            "remaining_moves": 50.0,
+            "board": "              N N                 N                                                                    |           |    *           *    |           |S                          |S               *          | |   |          * *              | |    S      |                *                | ",
+            "turn_token": "087920d0-0e6b-4716-9e77-add550a006aa",
+            "game_id": "ab16e71c-caeb-11eb-975e-0242c0a80004"
+        }
+        game = GameState(data)
+        # game.show()
+        self.assertAlmostEqual(game.score, -0.0166667)
+
+    def test_update_state_from_move(self):
+        data = {
+            "player_2": "uno",
+            "player_1": "dos",
+            "score_2": 0.0,
+            "walls": 10.0,
+            "score_1": 0.0,
+            "side": "N",
+            "remaining_moves": 50.0,
+            "board": "              N N                 N                                                                    |           |    *           *    |           |S                          |S               *          | |   |          * *              | |    S      |                *                | ",
+            "turn_token": "087920d0-0e6b-4716-9e77-add550a006aa",
+            "game_id": "ab16e71c-caeb-11eb-975e-0242c0a80004"
+        }
+        game = GameState(data)
+        move = {
+            'from_col': 0,
+            'from_row': 1,
+            'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004',
+            'side': 'N',
+            'to_col': 0,
+            'to_row': 2,
+            'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
+        }
+
+        # game.show()        
+        game.update_state_from_move(move)
+        board = encode_board(game.state)
+        result = "              N N                                                   N                                  |           |    *           *    |           |S                          |S               *          | |   |          * *              | |    S      |                *                | "
+        self.assertEqual(board, result)
+
+    def test_create_state_from_move(self):
+        data = {
+            "player_2": "uno",
+            "player_1": "dos",
+            "score_2": 0.0,
+            "walls": 10.0,
+            "score_1": 0.0,
+            "side": "N",
+            "remaining_moves": 50.0,
+            "board": "              N N                 N                                                                    |           |    *           *    |           |S                          |S               *          | |   |          * *              | |    S      |                *                | ",
+            "turn_token": "087920d0-0e6b-4716-9e77-add550a006aa",
+            "game_id": "ab16e71c-caeb-11eb-975e-0242c0a80004"
+        }
+        game = GameState(data)
+        move = {
+            'from_col': 0,
+            'from_row': 1,
+            'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004',
+            'side': 'N',
+            'to_col': 0,
+            'to_row': 2,
+            'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
+        }
+        new_game = create_state_from_move(move, game)
+        self.assertEqual(new_game.side, 'S')
+        self.assertEqual(new_game.player_distances, [5, 5, 8])
+        self.assertEqual(new_game.opponent_distances, [7, 8, 6])
+        self.assertAlmostEqual(new_game.score, 0.012499999999999997)
+
+    def test_move_minimax(self):
+        move = self.game.move_minimax(2)
+        result = {
+            'from_row': 0, 
+            'from_col': 1, 
+            'to_row': 0, 
+            'to_col': 0, 
+            'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004', 
+            'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
+        }
+        self.game.show()
+        print(move)
+        self.assertEqual(move, result)
+
+    def test_get_possible_moves(self):
+        print('Not yet implemented')
+        return False
 
 if __name__ == '__main__':
     unittest.main()

@@ -35,6 +35,8 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(pawn.side, side)
         self.assertEqual(pawn.base, base)
         self.assertEqual(pawn.target, target)
+        self.assertEqual(pawn.distance, 999999)
+        self.assertEqual(pawn.path, [])
 
     def test_repr(self):
         # print('Test Pawn Repr')
@@ -213,16 +215,28 @@ class TestPawn(unittest.TestCase):
         moves = bfs(p, self.game)
         # self.game.show(moves)
         self.assertEqual(len(moves), 9)
-        return True
 
     def test_bfs_2(self):
-        print('Test Pawn Breadth First Search Algorithm 2')
+        # print('Test Pawn Breadth First Search Algorithm 2')
         self.game.update_from_decoded(boards.BOARD_PAWN_PAWN_OBSTACLE_OBSTACLE)
         p = self.game.player_pawns[0]
         moves = bfs(p, self.game)
-        self.game.show(moves)
+        # self.game.show(moves)
         self.assertEqual(len(moves), 9)
-        return True
+        
+    def test_move(self):
+        # print('Test Pawn Move')
+        self.game.update_from_decoded(boards.BOARD_PAWN_PAWN_OBSTACLE_OBSTACLE)
+        p = self.game.player_pawns[0]
+        move = p.move()
+        result = {
+            'from_row': 4,
+            'from_col': 4,
+            'to_row': 3,
+            'to_col': 5,
+            'side': 'N'
+        }
+        self.assertEqual(move, result)
 
 
 if __name__ == '__main__':

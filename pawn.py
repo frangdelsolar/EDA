@@ -16,9 +16,20 @@ class Pawn:
         self.target = config.ROWS - 1 if self.side == 'N' else 0
 
         self.distance = 999999
+        self.path = []
 
     def __repr__(self) -> str:
         return f'{self.side}({self.pos.row}, {self.pos.col})'
+
+    def move(self):
+        next_move = self.path[0]
+        return {
+            'from_row': self.pos.row // 2,
+            'from_col': self.pos.col // 2,
+            'to_row':  next_move.row // 2,
+            'to_col': next_move.col // 2,
+            'side': self.side
+        }
 
 
 def get_valid_moves(pos, side, state):
