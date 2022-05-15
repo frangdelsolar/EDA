@@ -31,6 +31,11 @@ class Pawn:
             'side': self.side
         }
 
+    def score(self):
+        exp = 8 - abs(self.target//2 - self.pos.row//2)
+        score = 2 ** exp
+        return score
+
 
 def get_valid_moves(pos, side, state):
     from game_state import (

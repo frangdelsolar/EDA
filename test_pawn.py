@@ -238,6 +238,27 @@ class TestPawn(unittest.TestCase):
         }
         self.assertEqual(move, result)
 
+    def test_score_N(self):
+        self.game.update_from_decoded(boards.BOARD_BASE)
+        p = self.game.player_pawns[0]
+        self.assertEqual(p.score(), 1)
+        
+        p.pos.down(2)
+        self.assertEqual(p.score(), 2)
+
+        p.pos.down(14)
+        self.assertEqual(p.score(), 256)
+
+    def test_score_S(self):
+        self.game.update_from_decoded(boards.BOARD_BASE)
+        p = self.game.opponent_pawns[0]
+        self.assertEqual(p.score(), 1)
+        
+        p.pos.up(2)
+        self.assertEqual(p.score(), 2)
+
+        p.pos.up(14)
+        self.assertEqual(p.score(), 256)
 
 if __name__ == '__main__':
     unittest.main()
