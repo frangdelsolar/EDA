@@ -255,7 +255,20 @@ class TestGameState(unittest.TestCase):
         self.assertAlmostEqual(new_game.score, 20)
 
     def test_move_minimax(self):
-        move = self.game.move_minimax(3)
+        data = {
+            "player_2": "uno",
+            "player_1": "dos",
+            "score_2": 0.0,
+            "walls": 10.0,
+            "score_1": 0.0,
+            "side": "N",
+            "remaining_moves": 50.0,
+            "board": "                                  N                                                                    |           |    *           *    |           |S                          |                *          | |   |          * *              | |           |                *                | ",
+            "turn_token": "087920d0-0e6b-4716-9e77-add550a006aa",
+            "game_id": "ab16e71c-caeb-11eb-975e-0242c0a80004"
+        }
+        game = GameState(data)
+        move = game.move_minimax(3)
         result = {
             'from_row': 0, 
             'from_col': 1, 
@@ -264,7 +277,7 @@ class TestGameState(unittest.TestCase):
             'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004', 
             'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
         }
-        self.game.show()
+        # self.game.show()
         self.assertEqual(move, result)
 
     def test_get_possible_moves(self):

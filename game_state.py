@@ -35,11 +35,12 @@ class GameState:
         return move
 
     def get_possible_moves(self):
-        m1 = self.player_pawns[0].move(self.state)
-        m2 = self.player_pawns[1].move(self.state)
-        m3 = self.player_pawns[2].move(self.state)
+        moves = []
 
-        return m1 + m2 + m3
+        for pawn in self.player_pawns:
+            moves += pawn.move(self.state)
+
+        return moves
 
     def move_minimax(self, depth):
 
@@ -102,6 +103,8 @@ class GameState:
 def minimax(game, depth, alpha, beta, maximizing):
     # game.show()
     print('.', end='')
+    print(game.side, game.score)
+
     if depth <= 0:
         return game.score
     
@@ -149,7 +152,7 @@ def create_state_from_move(move, game):
 
 def get_board_score(game):
     opponent = sum(game.opponent_scores) 
-    player = sum(game.player_scores) 
+    player = sum(game.player_scores)
     return player - opponent
 
 def get_pawn_scores(pawns):
