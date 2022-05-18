@@ -22,12 +22,12 @@ based on a representation of the state of the game that analises the scores of t
 </ol>
 
 <h4>1. The Shortest Path - Breadth First Search Algorithm Implementation</h4>
-<p><a href="https://en.wikipedia.org/wiki/Breadth-first_search">Breadth First Search</a> on Wikipedia.</p>
+<small><a href="https://en.wikipedia.org/wiki/Breadth-first_search">Breadth First Search</a> on Wikipedia.</small>
 <p>As the board gets more complex by the movement of the pawns and the walls that are being built. The pawn faces the problem of getting towards the target position
 using the shortest path possible. It is implemented a search algorithm that traverses the board looking for valid spots where the user could move, and accounts for the distance of the possible movements.</p>
 
 <h4>2. Anticipation - Minimax Algorithm Implementation</h4>
-<p><a href="https://en.wikipedia.org/wiki/Minimax">Minimax</a> on Wikipedia.</p>
+<small><a href="https://en.wikipedia.org/wiki/Minimax">Minimax</a> on Wikipedia.</small>
 <p>In order to decide the best possible move, this algorithm helps the game state manager decide anticipating the scores of the board given that all players choose to play the shortest way to the end of the board. It is configured to anticipate up to three moves of each player ahead.</p>
 
 <p>However, this seemed to be the right approach to this problem. It faced performance issues. As every move took 3 secs on average to be decided.</p>
