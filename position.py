@@ -1,16 +1,11 @@
-import copy
-import config
-
 
 class Position:
     def __init__(self, row, col):
         self.row = row
         self.col = col
-        self.depth = None
-        self.parent = None
 
     def __repr__(self) -> str:
-        return f'[{self.row}, {self.col}, {self.depth}, {self.parent}]'
+        return f'[{self.row}, {self.col}]'
 
     def __eq__(self, o: object) -> bool:
         return (o is not None) and (self.row == o.row and self.col == o.col)
@@ -43,14 +38,3 @@ def append_pos(pos, array):
     if pos not in array:
         array.append(pos)
     return array
-
-def get_shortest_path(cell, moves, path):
-    if cell is None:
-        return path
-    path.append(cell)
-
-    prev_cell = None
-    if cell.parent > 0:
-        prev_cell = moves[cell.parent]
-
-    return get_shortest_path(prev_cell, moves, path)

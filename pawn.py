@@ -4,7 +4,6 @@ from position import (
     Position, 
     append_pos, 
     rotate_moves,
-    get_shortest_path
 )
 
 
@@ -21,15 +20,20 @@ class Pawn:
     def __repr__(self) -> str:
         return f'{self.side}({self.pos.row}, {self.pos.col})'
 
-    def move(self):
-        next_move = self.path[0]
-        return {
-            'from_row': self.pos.row // 2,
-            'from_col': self.pos.col // 2,
-            'to_row':  next_move.row // 2,
-            'to_col': next_move.col // 2,
-            'side': self.side
-        }
+    def move(self, state):
+        neighbours = get_valid_moves(self.pos, self.side, state)
+        moves = []
+
+        for neighbour in neighbours:
+            moves.append({
+                'from_row': self.pos.row // 2,
+                'from_col': self.pos.col // 2,
+                'to_row':  neighbour.row // 2,
+                'to_col': neighbour.col // 2,
+                'side': self.side
+            })
+
+        return moves
 
     def score(self):
         exp = 8 - abs(self.target//2 - self.pos.row//2)
@@ -103,36 +107,3 @@ def get_valid_moves(pos, side, state):
         if within_boundaries(n):
             definitive.append(n)
     return definitive
-
-def bfs(pawn, game):
-    path = []
-    visited = []
-    depth = 0
-    parent = -1
-    pawn.pos.depth = depth    
-    pawn.pos.parent = depth    
-    queue = [copy.deepcopy(pawn.pos)]   
-
-    while len(queue) > 0:
-        cell = queue.pop(0)
-
-        visited.append(cell)
-        parent = visited.index(cell)
-        depth = cell.depth + 1
-
-        if cell.row == pawn.target:
-            path = get_shortest_path(cell, visited, path)
-            pawn.distance = path[0].depth
-            path.reverse()
-            pawn.path = path
-            return path
-            
-        moves = get_valid_moves(cell, pawn.side, game.state)
-        for move in moves:
-            if not move in visited and not move in queue:
-                move.parent = parent
-                move.depth = depth 
-                queue.append(move)
-    
-    print("There's no way out for this soldier.")
-    return path

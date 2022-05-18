@@ -52,8 +52,8 @@ class TestGameState(unittest.TestCase):
         self.assertEqual(self.game.opponent, 'S')
         self.assertEqual(len(self.game.player_pawns), 3)
         self.assertEqual(len(self.game.opponent_pawns), 3)
-        self.assertEqual(len(self.game.player_distances), 3)
-        self.assertEqual(len(self.game.opponent_distances), 3)
+        self.assertEqual(len(self.game.player_scores), 3)
+        self.assertEqual(len(self.game.opponent_scores), 3)
 
     def test_update_from_decoded(self):
         # print('Test Game State Update from Decoded')
@@ -77,8 +77,7 @@ class TestGameState(unittest.TestCase):
         # print('Test Game State Create Pawns')
         pawns = create_pawns('N', self.game)
         p1 = pawns[0]
-        self.assertEqual(len(p1.path), 9)
-        self.assertEqual(p1.distance, 9)
+        self.assertEqual(p1.score(), 1)
         self.assertEqual(len(pawns), 3)
 
     def test_within_boundaries(self):
@@ -144,36 +143,31 @@ class TestGameState(unittest.TestCase):
 
         self.assertEqual(m1_r, result)
     
-    def test_get_pawn_distances(self):
+    def test_get_pawn_scores_S(self):
         # print('Test Game State Get Pawn Distances')
-        p1 = Pawn(0, 0, 'S')
-        p1.distance = 9
-
-        p2 = Pawn(0, 4, 'S')
-        p2.distance = 6
-
-        p3 = Pawn(4, 5, 'S')
-        p3.distance = 5
+        p1 = Pawn(16, 0, 'S')
+        p2 = Pawn(16, 4, 'S')
+        p3 = Pawn(0, 5, 'S')
 
         pawns = [p1, p2, p3]
 
-        distances = get_pawn_distances(pawns)
-        result = [9, 6, 5]
+        distances = get_pawn_scores(pawns)
+        result = [1, 1, 256]
 
         self.assertEqual(distances, result)
 
-    def test_move_shortest(self):
-        # print('Test Game State Move')
-        move = self.game.move_shortest()
-        result = {
-            'from_row': 0, 
-            'from_col': 1, 
-            'to_row': 0, 
-            'to_col': 0, 
-            'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004', 
-            'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
-        }
-        self.assertEqual(move, result)
+    def test_get_pawn_scores_N(self):
+        # print('Test Game State Get Pawn Distances')
+        p1 = Pawn(0, 0, 'N')
+        p2 = Pawn(0, 4, 'N')
+        p3 = Pawn(16, 5, 'N')
+
+        pawns = [p1, p2, p3]
+
+        distances = get_pawn_scores(pawns)
+        result = [1, 1, 256]
+
+        self.assertEqual(distances, result)
 
     def test_get_board_score(self):
         # print('Test Game State Score')
@@ -188,7 +182,7 @@ class TestGameState(unittest.TestCase):
             "score_2": 0.0,
             "walls": 10.0,
             "score_1": 0.0,
-            "side": "N",
+            "side": "S",
             "remaining_moves": 50.0,
             "board": "              N N                 N                                                                    |           |    *           *    |           |S                          |S               *          | |   |          * *              | |    S      |                *                | ",
             "turn_token": "087920d0-0e6b-4716-9e77-add550a006aa",
@@ -196,7 +190,8 @@ class TestGameState(unittest.TestCase):
         }
         game = GameState(data)
         # game.show()
-        self.assertAlmostEqual(game.score, -0.0166667)
+
+        self.assertAlmostEqual(game.score, 22)
 
     def test_update_state_from_move(self):
         data = {
@@ -229,6 +224,7 @@ class TestGameState(unittest.TestCase):
         self.assertEqual(board, result)
 
     def test_create_state_from_move(self):
+        # print('Test Game State create from move')
         data = {
             "player_2": "uno",
             "player_1": "dos",
@@ -252,13 +248,14 @@ class TestGameState(unittest.TestCase):
             'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
         }
         new_game = create_state_from_move(move, game)
+        # new_game.show()
         self.assertEqual(new_game.side, 'S')
-        self.assertEqual(new_game.player_distances, [5, 5, 8])
-        self.assertEqual(new_game.opponent_distances, [7, 8, 6])
-        self.assertAlmostEqual(new_game.score, 0.012499999999999997)
+        self.assertEqual(new_game.player_scores, [16, 8, 2])
+        self.assertEqual(new_game.opponent_scores, [1, 1, 4])
+        self.assertAlmostEqual(new_game.score, 20)
 
     def test_move_minimax(self):
-        move = self.game.move_minimax(2)
+        move = self.game.move_minimax(3)
         result = {
             'from_row': 0, 
             'from_col': 1, 
@@ -268,12 +265,20 @@ class TestGameState(unittest.TestCase):
             'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
         }
         self.game.show()
-        print(move)
         self.assertEqual(move, result)
 
     def test_get_possible_moves(self):
-        print('Not yet implemented')
-        return False
+        # print('Test Game State Get Possible Moves')
+        # n1 = get_valid_moves(self.game.player_pawns[0].pos, self.game.player_pawns[0].side, self.game.state)
+        # n2 = get_valid_moves(self.game.player_pawns[1].pos, self.game.player_pawns[1].side, self.game.state)
+        # n3 = get_valid_moves(self.game.player_pawns[2].pos, self.game.player_pawns[2].side, self.game.state)
+        # neighbours = n1 + n2 + n3
+        # self.game.show(neighbours)
+        
+        moves = self.game.get_possible_moves()
+        result = [{'from_row': 0, 'from_col': 1, 'to_row': 0, 'to_col': 0, 'side': 'N'}, {'from_row': 0, 'from_col': 1, 'to_row': 1, 'to_col': 1, 'side': 'N'}, {'from_row': 0, 'from_col': 1, 'to_row': 0, 'to_col': 2, 'side': 'N'}, {'from_row': 0, 'from_col': 4, 'to_row': 0, 'to_col': 3, 'side': 'N'}, {'from_row': 0, 'from_col': 4, 'to_row': 1, 'to_col': 4, 'side': 'N'}, {'from_row': 0, 'from_col': 4, 'to_row': 0, 'to_col': 5, 'side': 'N'}, {'from_row': 0, 'from_col': 7, 'to_row': 0, 'to_col': 6, 'side': 'N'}, {'from_row': 0, 'from_col': 7, 'to_row': 1, 'to_col': 7, 'side': 'N'}, {'from_row': 0, 'from_col': 7, 'to_row': 0, 'to_col': 8, 'side': 'N'}]
+
+        self.assertEqual(moves, result)
 
 if __name__ == '__main__':
     unittest.main()

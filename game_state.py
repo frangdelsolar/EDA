@@ -17,8 +17,8 @@ class GameState:
         self.opponent = 'S' if self.side == 'N' else 'N'
         self.player_pawns = create_pawns(self.side, self)
         self.opponent_pawns = create_pawns(self.opponent, self)
-        self.player_distances = get_pawn_distances(self.player_pawns)
-        self.opponent_distances = get_pawn_distances(self.opponent_pawns)
+        self.player_scores = get_pawn_scores(self.player_pawns)
+        self.opponent_scores = get_pawn_scores(self.opponent_pawns)
         self.score = get_board_score(self)
     
     def update_from_decoded(self, decoded):
@@ -35,11 +35,11 @@ class GameState:
         return move
 
     def get_possible_moves(self):
-        return [
-            self.player_pawns[0].move(),
-            self.player_pawns[1].move(),
-            self.player_pawns[2].move(),
-        ]
+        m1 = self.player_pawns[0].move(self.state)
+        m2 = self.player_pawns[1].move(self.state)
+        m3 = self.player_pawns[2].move(self.state)
+
+        return m1 + m2 + m3
 
     def move_minimax(self, depth):
 
@@ -61,8 +61,6 @@ class GameState:
             best_move['game_id'] = self.game_id
             best_move['turn_token'] = self.turn_token
         return best_move
-        
-
 
     def update_state_from_move(self, move):
         from_row = move['from_row'] * 2
@@ -83,7 +81,7 @@ class GameState:
         if moves:
             for move in moves:
                 # if move['depth'] > 0:
-                board[move.row][move.col] = move.depth
+                board[move.row][move.col] = 'v'
 
         headers = '0a1b2c3d4e5f6g7h8'
         print('    ', end='')
@@ -134,32 +132,30 @@ def minimax(game, depth, alpha, beta, maximizing):
         return best_score
         
 
-
-
 def create_state_from_move(move, game):
     new_game = copy.deepcopy(game)
     new_game.side = game.opponent
     new_game.opponent = game.side
+    
     new_game.update_state_from_move(move)
     new_game.player_pawns = create_pawns(new_game.side, new_game)
     new_game.opponent_pawns = create_pawns(new_game.opponent, new_game)
-    new_game.player_distances = get_pawn_distances(new_game.player_pawns)
-    new_game.opponent_distances = get_pawn_distances(new_game.opponent_pawns)
+    new_game.player_scores = get_pawn_scores(new_game.player_pawns)
+    new_game.opponent_scores = get_pawn_scores(new_game.opponent_pawns)
     new_game.score = get_board_score(new_game)
     return new_game
 
 
 def get_board_score(game):
-    max_distance_posible = (9 * 9 * 3) - 3
-    opponent = sum(game.opponent_distances) / max_distance_posible
-    player = sum(game.player_distances) / max_distance_posible
-    return opponent - player
+    opponent = sum(game.opponent_scores) 
+    player = sum(game.player_scores) 
+    return player - opponent
 
-def get_pawn_distances(pawns):
-    distances = []
+def get_pawn_scores(pawns):
+    scores = []
     for p in pawns:
-        distances.append(p.distance)
-    return distances
+        scores.append(p.score())
+    return scores
 
 
 def within_boundaries(pos):
@@ -193,7 +189,6 @@ def create_pawns(side, game):
         for j, item in enumerate(row):
             if item == side:
                 p = Pawn(i, j, side)
-                bfs(p, game)
                 pawns.append(p)
     return pawns
 
