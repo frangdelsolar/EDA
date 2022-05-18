@@ -5,7 +5,7 @@ by <strong>Francisco Javier González del Solar</strong>
 
 <h2>About the project</h2>
 <p>The aim of the project was to create an Artificial Intelligence able to play a mod version of Quoridor developed by the EDA team.</p>
-<p>The code has two distincts branches to hold logic for different algorithms to play the game.</p>
+<p>The code has two distinct branches to hold logic for different algorithms to play the game.</p>
 
 <h3>Base code</h3>
 The base code consists of a series of classes and functions that serve the purpose of connecting with the socket and managing the state of the game. To that end, the bot
