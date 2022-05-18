@@ -43,3 +43,19 @@ using the shortest path possible. It is implemented a search algorithm that trav
 <p>I implemented a TDD policy to meet the highest score possible. It was a wise decision as it speed up the debugging process for the development of the most complex scenarios such as getting the valid moves for each pawn, calculating the score of the board, anticipating game states, and looking for the best moves to be done.</p>
 
 <p>Following, there are some screenshots for the testing of the function get_valid_move for the pawns: </p>
+
+![image](https://user-images.githubusercontent.com/54779433/169143711-09412c3f-1b48-40db-a259-603fb330ca71.png)
+
+![image](https://user-images.githubusercontent.com/54779433/169143786-83d77437-abb3-4ac6-ba2c-955ce3b95f37.png)
+
+![image](https://user-images.githubusercontent.com/54779433/169143888-88549ae8-561c-49a7-8fdb-8ac724af2398.png)
+
+
+<p>These are two examples of the results of the BFS implementation.</p>
+
+![image](https://user-images.githubusercontent.com/54779433/169144755-0c4e921c-2ca6-4d09-8aba-460045906930.png)
+
+![image](https://user-images.githubusercontent.com/54779433/169144531-5c75582b-2643-4d22-b144-5731b8efe86e.png)
+
+
+
