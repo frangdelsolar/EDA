@@ -13,7 +13,7 @@ class Challenge:
         game = GameState(request_data['data'])
         # move = game.move_shortest()
         game.show()
-        move = game.move_minimax(1)
+        move = game.move_minimax(2)
 
         if move:
             await connection.send('move', move)

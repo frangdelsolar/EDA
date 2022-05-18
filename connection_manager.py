@@ -93,6 +93,8 @@ class ConnectionManager:
                 'data': data,
             }
         )
+        print()
+        print('Sending message: ')
         print(message)
         await self.websocket.send(message)
 

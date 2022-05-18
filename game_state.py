@@ -101,6 +101,7 @@ class GameState:
 
 def minimax(game, depth, alpha, beta, maximizing):
     # game.show()
+    print('.', end='')
     if depth <= 0:
         return game.score
     
