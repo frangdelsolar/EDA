@@ -257,23 +257,47 @@ class TestGameState(unittest.TestCase):
         self.assertEqual(new_game.opponent_distances, [7, 8, 6])
         self.assertAlmostEqual(new_game.score, 0.012499999999999997)
 
-    def test_move_minimax(self):
-        move = self.game.move_minimax(2)
-        result = {
-            'from_row': 0, 
-            'from_col': 1, 
-            'to_row': 0, 
-            'to_col': 0, 
-            'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004', 
-            'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
-        }
-        self.game.show()
-        print(move)
-        self.assertEqual(move, result)
+    # def test_move_minimax(self):
+    #     move = self.game.move_minimax(2)
+    #     result = {
+    #         'from_row': 0, 
+    #         'from_col': 1, 
+    #         'to_row': 0, 
+    #         'to_col': 0, 
+    #         'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004', 
+    #         'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
+    #     }
+    #     # self.game.show()
+    #     # print(move)
+    #     self.assertEqual(move, result)
 
     def test_get_possible_moves(self):
-        print('Not yet implemented')
+        # print('Not yet implemented')
         return False
+
+    def test_can_place_wall(self):
+        w1 = Position(0, 14)
+        w1v = can_place_wall(w1, 'v', self.decoded)
+        self.assertFalse(w1v)
+        self.assertTrue(can_place_wall(w1, 'h', self.decoded))
+
+        w2 = Position(1, 14)
+        self.assertFalse(can_place_wall(w2, 'v', self.decoded))
+        self.assertTrue(can_place_wall(w2, 'h', self.decoded))
+        
+        w3 = Position(10, 0)
+        self.assertTrue(can_place_wall(w3, 'v', self.decoded))
+        self.assertFalse(can_place_wall(w3, 'h', self.decoded))
+        
+        w4 = Position(10, 1)
+        self.assertTrue(can_place_wall(w4, 'v', self.decoded))
+        self.assertFalse(can_place_wall(w4, 'h', self.decoded))
+        
+        w5 = Position(0, 0)
+        self.assertTrue(can_place_wall(w5, 'h', self.decoded))
+        self.assertTrue(can_place_wall(w5, 'v', self.decoded))
+
+
 
 if __name__ == '__main__':
     unittest.main()

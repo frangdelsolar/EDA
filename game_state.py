@@ -1,6 +1,8 @@
 import copy
+from random import randint 
 import config
 from pawn import *
+from position import Position
 
 
 class GameState:
@@ -10,6 +12,7 @@ class GameState:
         self.player_2 = data['player_2']
         self.side = data['side']
         self.remaining_moves = data['remaining_moves']
+        self.walls = data['walls']
         self.turn_token = data['turn_token']
         self.game_id = data['game_id']
 
@@ -26,7 +29,38 @@ class GameState:
         self.player_pawns = create_pawns(self.side, self)
         self.opponent_pawns = create_pawns(self.opponent, self)
 
+    def new_wall(self):
+        ''' Returns the best position to place a wall '''
+
+        best_pawn = self.opponent_pawns[self.opponent_distances.index(min(self.opponent_distances))]
+        wall_pos = best_pawn.pos
+        if self.side == 'N':
+            wall_pos.up()
+        wall = { 
+                    'game_id': self.game_id,
+                    'turn_token': self.turn_token,
+                    'row': wall_pos.row // 2,
+                    'col': wall_pos.col // 2,
+                    'game_id': self.game_id,
+                    'turn_token': self.turn_token
+                }
+        
+        orientation = 'h'
+        if can_place_wall(wall_pos, orientation , self.state):
+            wall['orientation'] = orientation
+            return wall
+
+        orientation = 'v'
+        if can_place_wall(wall_pos, orientation , self.state):
+            wall['orientation'] = orientation
+            return wall
+    	
+        print(wall)
+        return wall
+        # chose a different place        
+
     def move_shortest(self):
+        """ What if no move """
         best_pawn = self.player_pawns[self.player_distances.index(min(self.player_distances))]
         move = best_pawn.move()
         move.pop('side')
@@ -62,8 +96,6 @@ class GameState:
             best_move['turn_token'] = self.turn_token
         return best_move
         
-
-
     def update_state_from_move(self, move):
         from_row = move['from_row'] * 2
         from_col = move['from_col'] * 2
@@ -101,6 +133,26 @@ class GameState:
                 print('  ', end='')
             print()
 
+def can_place_wall(pos, dir, state):
+    w1 = w2 = None
+    if dir == 'h':
+        w1 = Position(pos.row + 1, pos.col)
+        w2 = Position(pos.row + 1, pos.col + 2)
+        if (within_boundaries(w1) and not is_cell_wall(w1, state) and
+            within_boundaries(w2) and not is_cell_wall(w2, state)
+        ):
+            return True
+    elif dir == 'v':
+        w1 = Position(pos.row, pos.col + 1)
+        w2 = Position(pos.row + 2, pos.col + 1)
+        if (within_boundaries(w1) and not is_cell_wall(w1, state) and
+            within_boundaries(w2) and not is_cell_wall(w2, state)
+        ):
+            return True
+    return False
+
+
+
 def minimax(game, depth, alpha, beta, maximizing):
     # game.show()
     if depth <= 0:
@@ -133,9 +185,6 @@ def minimax(game, depth, alpha, beta, maximizing):
 
         return best_score
         
-
-
-
 def create_state_from_move(move, game):
     new_game = copy.deepcopy(game)
     new_game.side = game.opponent
