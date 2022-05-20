@@ -3,12 +3,11 @@ import websockets
 import time
 import os
 from random import randint
-from challenge import Challenge
+from game_state import GameState
 
 
 class ConnectionManager:
     def __init__(self):
-        self.challenges = []
         self.websocket = None
 
     
@@ -61,6 +60,7 @@ class ConnectionManager:
 
 
     async def process_game_over(self, request_data):
+        request_data['algorithm'] = 'minimax_no_bfs'
         print('Processing game over')
         with open('logs/game_over.txt', 'a') as file:
             file.write(json.dumps(request_data) + '\n')
@@ -75,16 +75,28 @@ class ConnectionManager:
             },
         )
 
-        self.append_challenge(request_data['data']['challenge_id'])
-
 
     async def process_your_turn(self, request_data):
-        challenge = self.get_or_create_challenge(request_data['data']['game_id'])
-        if randint(0, 10) > 2:
-            await challenge.process_move(request_data, self)
-        else:
-            await challenge.process_wall(request_data, self)
+        ''' Decides to play a move or a wall according to Game State '''
+        game = GameState(request_data['data'])
+        game.show()
 
+        if game.walls > 0:
+            await self.process_wall(game)
+        else:
+            await self.process_move(game)
+
+    async def process_move(self, game):
+        ''' Gets the best possible move and sends it to the socket '''
+        # move = game.move_minimax(1)
+        move = game.move_shortest()
+        await self.send('move', move)
+
+
+    async def process_wall(self, game):
+        wall = game.new_wall()
+        print(wall)
+        await self.send('wall', wall)
 
     async def send(self, action, data):
         message = json.dumps(
@@ -95,19 +107,3 @@ class ConnectionManager:
         )
         print(message)
         await self.websocket.send(message)
-
-
-    def append_challenge(self, challenge_id):
-        challenge = Challenge(challenge_id)
-        self.challenges.append(challenge)
-        return challenge
-
-
-    def get_or_create_challenge(self, challenge_id):
-        for challenge in self.challenges:
-            if challenge.id == challenge_id:
-                return challenge
-
-        return self.append_challenge(challenge_id)
-
-
