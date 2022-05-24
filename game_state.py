@@ -3,6 +3,7 @@ from random import randint
 import config
 from pawn import *
 from position import Position
+from wall import Wall
 
 
 class GameState:
@@ -10,6 +11,8 @@ class GameState:
         self.board = data['board']
         self.player_1 = data['player_1']
         self.player_2 = data['player_2']
+        self.score_1 = data['score_1']
+        self.score_2 = data['score_2']
         self.side = data['side']
         self.remaining_moves = data['remaining_moves']
         self.walls = data['walls']
@@ -22,7 +25,7 @@ class GameState:
         self.opponent_pawns = create_pawns(self.opponent, self)
         self.player_distances = get_pawn_distances(self.player_pawns)
         self.opponent_distances = get_pawn_distances(self.opponent_pawns)
-        self.score = get_board_score(self)
+        # self.score = get_board_score(self)
     
     def update_from_decoded(self, decoded):
         self.state = decoded
@@ -31,42 +34,55 @@ class GameState:
 
     def new_wall(self):
         ''' Returns the best position to place a wall '''
+        pawns = copy.deepcopy(self.opponent_pawns)
+        pawns.sort(key=sort_by_distance)
 
-        best_pawn = self.opponent_pawns[self.opponent_distances.index(min(self.opponent_distances))]
-        wall_pos = best_pawn.pos
-        if self.side == 'N':
-            wall_pos.up()
-        wall = { 
-                    'game_id': self.game_id,
-                    'turn_token': self.turn_token,
-                    'row': wall_pos.row // 2,
-                    'col': wall_pos.col // 2,
-                    'game_id': self.game_id,
-                    'turn_token': self.turn_token
-                }
-        
-        orientation = 'h'
-        if can_place_wall(wall_pos, orientation , self.state):
-            wall['orientation'] = orientation
-            return wall
+        while len(pawns) > 0:
+            pawn = pawns.pop(0)
+            r = pawn.pos.row
+            c = pawn.pos.col
 
-        orientation = 'v'
-        if can_place_wall(wall_pos, orientation , self.state):
-            wall['orientation'] = orientation
-            return wall
-    	
-        print(wall)
-        return wall
-        # chose a different place        
+            if len(pawn.path) > 0:
+                next_move = pawn.path[0]
+                if next_move:
+                    r = next_move.row
+                    c = next_move.col
+                
+            wall = Wall(r, c, self.turn_token, self.game_id)
+
+            if self.side == 'N':
+                wall.pos.up(2)
+
+            wall.orientation = 'h'
+            if can_place_wall(wall, self.state):
+                return wall.json()
+
+            # wall.orientation = 'v'
+            # if can_place_wall(wall, self.state):
+            #     return wall.json()
+
+        wall.pos.row = randint(0, 8)
+        wall.pos.col= randint(0, 8)
+        wall.orientation = 'h' if randint(0, 1) == 0 else 'v'
+        if can_place_wall(wall, self.state):
+            return wall.json()
+        return None    
 
     def move_shortest(self):
-        """ What if no move """
-        best_pawn = self.player_pawns[self.player_distances.index(min(self.player_distances))]
-        move = best_pawn.move()
-        move.pop('side')
-        move['game_id'] = self.game_id
-        move['turn_token'] = self.turn_token
-        return move
+        ''' Returns the best move possible '''
+        pawns = copy.deepcopy(self.player_pawns)
+        pawns.sort(key=sort_by_distance)
+        # pawns.reverse()
+
+        while len(pawns) > 0:
+            pawn = pawns.pop(0)
+            move = pawn.move()
+            if move:
+                move.pop('side')
+                move['game_id'] = self.game_id
+                move['turn_token'] = self.turn_token
+                return move    
+        return None          
 
     def get_possible_moves(self):
         return [
@@ -109,7 +125,12 @@ class GameState:
         print(f'Playing {self.side}')
         print(f'Çhallenge id: {self.game_id}')
         print(f'{self.player_1} vs. {self.player_2}')
-        print('Board Score: ', self.score)
+        if self.score_1 > self.score_2:
+            print(f'GANANDO, {self.score_1}, {self.score_2}')
+        else:
+            print(f'PERDIENDO, {self.score_1}, {self.score_2}')
+        print(f'Remaining moves: {self.remaining_moves}')
+        # print('Board Score: ', self.score)
 
         board = [[i for i in row] for row in self.state]
         if moves:
@@ -133,24 +154,20 @@ class GameState:
                 print('  ', end='')
             print()
 
-def can_place_wall(pos, dir, state):
-    w1 = w2 = None
-    if dir == 'h':
-        w1 = Position(pos.row + 1, pos.col)
-        w2 = Position(pos.row + 1, pos.col + 2)
-        if (within_boundaries(w1) and not is_cell_wall(w1, state) and
-            within_boundaries(w2) and not is_cell_wall(w2, state)
-        ):
-            return True
-    elif dir == 'v':
-        w1 = Position(pos.row, pos.col + 1)
-        w2 = Position(pos.row + 2, pos.col + 1)
-        if (within_boundaries(w1) and not is_cell_wall(w1, state) and
-            within_boundaries(w2) and not is_cell_wall(w2, state)
-        ):
-            return True
-    return False
 
+def sort_by_distance(val):
+    return val.distance
+
+
+def can_place_wall(wall, state):
+    b1, b2, b3, b4 = wall.blocks()
+
+    if (within_boundaries(b1) and not is_cell_wall(b1, state) and 
+        within_boundaries(b2) and not is_cell_wall(b2, state) and
+        within_boundaries(b3) and not is_cell_wall(b3, state) and 
+        within_boundaries(b4) and not is_cell_wall(b4, state)):
+        return True
+    return False
 
 
 def minimax(game, depth, alpha, beta, maximizing):

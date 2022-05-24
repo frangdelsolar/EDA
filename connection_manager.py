@@ -10,7 +10,6 @@ class ConnectionManager:
     def __init__(self):
         self.websocket = None
 
-    
     async def start(self, auth_token):
         uri = "wss://4yyity02md.execute-api.us-east-1.amazonaws.com/ws?token={}".format(auth_token)
         while True:
@@ -81,22 +80,29 @@ class ConnectionManager:
         game = GameState(request_data['data'])
         game.show()
 
+        action = None
+        result = None
         if game.walls > 0:
-            await self.process_wall(game)
-        else:
-            await self.process_move(game)
+        # if randint(0, 10) > 4:
+            action, result = self.process_wall(game)
 
-    async def process_move(self, game):
+        if not result:
+            action, result = self.process_move(game)
+            if not result:
+                action, result = self.process_wall(game)
+
+        await self.send(action, result)
+
+    def process_move(self, game):
         ''' Gets the best possible move and sends it to the socket '''
         # move = game.move_minimax(1)
         move = game.move_shortest()
-        await self.send('move', move)
+        return ('move', move)
 
 
-    async def process_wall(self, game):
+    def process_wall(self, game):
         wall = game.new_wall()
-        print(wall)
-        await self.send('wall', wall)
+        return ('wall', wall)
 
     async def send(self, action, data):
         message = json.dumps(
