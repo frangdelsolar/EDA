@@ -1,5 +1,4 @@
 from position import Position
-import json
 
 class Wall:
     def __init__(self, row, col, turn_token, game_id):
