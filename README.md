@@ -51,7 +51,7 @@ using the shortest path possible. It is implemented a search algorithm that trav
 ![image](https://user-images.githubusercontent.com/54779433/169143888-88549ae8-561c-49a7-8fdb-8ac724af2398.png)
 
 
-<p>These are two examples of the results of the BFS implementation.</p>
+<p>These are two examples of the results of the BFS implementation. </p>
 
 ![image](https://user-images.githubusercontent.com/54779433/169144755-0c4e921c-2ca6-4d09-8aba-460045906930.png)
 
