@@ -181,23 +181,23 @@ class TestGameState(unittest.TestCase):
         score = get_board_score(self.game)
         self.assertEqual(score, 0)
         
-    def test_get_board_score_2(self):
-        # print('Test Game State Score 2')
-        data = {
-            "player_2": "uno",
-            "player_1": "dos",
-            "score_2": 0.0,
-            "walls": 10.0,
-            "score_1": 0.0,
-            "side": "N",
-            "remaining_moves": 50.0,
-            "board": "              N N                 N                                                                    |           |    *           *    |           |S                          |S               *          | |   |          * *              | |    S      |                *                | ",
-            "turn_token": "087920d0-0e6b-4716-9e77-add550a006aa",
-            "game_id": "ab16e71c-caeb-11eb-975e-0242c0a80004"
-        }
-        game = GameState(data)
-        # game.show()
-        self.assertAlmostEqual(game.score, -0.0166667)
+    # def test_get_board_score_2(self):
+    #     # print('Test Game State Score 2')
+    #     data = {
+    #         "player_2": "uno",
+    #         "player_1": "dos",
+    #         "score_2": 0.0,
+    #         "walls": 10.0,
+    #         "score_1": 0.0,
+    #         "side": "N",
+    #         "remaining_moves": 50.0,
+    #         "board": "              N N                 N                                                                    |           |    *           *    |           |S                          |S               *          | |   |          * *              | |    S      |                *                | ",
+    #         "turn_token": "087920d0-0e6b-4716-9e77-add550a006aa",
+    #         "game_id": "ab16e71c-caeb-11eb-975e-0242c0a80004"
+    #     }
+    #     game = GameState(data)
+    #     # game.show()
+    #     self.assertAlmostEqual(game.score, -0.0166667)
 
     def test_update_state_from_move(self):
         data = {
@@ -289,7 +289,7 @@ class TestGameState(unittest.TestCase):
 
         w1.orientation = 'h'
         w1h = can_place_wall(w1, self.decoded)
-        self.assertTrue(w1h)
+        self.assertFalse(w1h)
 
         w2 = Wall(2, 14, turn_token, game_id)
 
@@ -299,25 +299,23 @@ class TestGameState(unittest.TestCase):
 
         w2.orientation = 'h'
         w2h = can_place_wall(w2, self.decoded)
-        self.assertTrue(w2h)
+        self.assertFalse(w2h)
         
-
         w3 = Wall(10, 0, turn_token, game_id)
 
         w3.orientation = 'v'
         w3v = can_place_wall(w3, self.decoded)
-        self.assertTrue(w3v)
+        self.assertFalse(w3v)
 
         w3.orientation = 'h'
         w3h = can_place_wall(w3, self.decoded)
         self.assertFalse(w3h)
-        
        
         w4 =  Wall(10, 2, turn_token, game_id)
 
         w4.orientation = 'v'
         w4v = can_place_wall(w4, self.decoded)
-        self.assertTrue(w4v)
+        self.assertFalse(w4v)
 
         w4.orientation = 'h'
         w4h = can_place_wall(w4, self.decoded)
@@ -333,8 +331,10 @@ class TestGameState(unittest.TestCase):
         w5h = can_place_wall(w5, self.decoded)
         self.assertTrue(w5h)
 
-    # def test_new_wall(self):
-    #     self.game.new_wall()
+    def test_new_wall(self):
+        wall = self.game.new_wall()
+        result = {'row': 6, 'col': 1, 'orientation': 'h', 'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa', 'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004'} 
+        self.assertEqual(wall, result)
 
     def test_index_of_range(self):
         data = {"side": "S", "score_2": 2635.0, "board": "      N N   N    -*- -*- -*-   -*-         |         -*-    *                |       -*-   -*-         |                *  -*-           |                   -*-                             -*-                                                                 -*-         -*-  S S       S    ", "remaining_moves": 31.0, "score_1": 3816.0, "player_1": "frangdelsolar@gmail.com", "player_2": "frangdelsolar@gmail.com", "walls": 1.0, "turn_token": "ecf03bbb-3ca6-4e0c-8f34-0cb9b139f56e", "game_id": "1385a7d0-daee-11ec-aef0-7ecdf393f9cc"}

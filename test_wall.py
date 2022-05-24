@@ -37,8 +37,8 @@ class TestPosition(unittest.TestCase):
 
         self.assertEqual(json_data, result)
 
-    def test_blocks_h(self):
-        # print('Test Wall Blocks H')
+    def test_blocks(self):
+        # print('Test Wall Blocks')
 
         row = 2
         col = 6
@@ -53,29 +53,12 @@ class TestPosition(unittest.TestCase):
 
         pos1 = Position(3, 6)
         pos2 = Position(3, 8)
-        result = [pos1, pos2]
+        pos3 = Position(2, 7)
+        pos4 = Position(4, 7)
+        result = [pos1, pos2, pos3, pos4]
         
         self.assertEqual(blocks, result)
 
-    def test_blocks_v(self):
-        # print('Test Wall Blocks V')
-
-        row = 2
-        col = 6
-        orientation = 'v'
-        turn_token = 'token123'
-        game_id = 'gameId123'
-
-        wall = Wall(row, col, turn_token, game_id)
-        wall.orientation = orientation
-
-        blocks = wall.blocks()
-
-        pos1 = Position(2, 7)
-        pos2 = Position(4, 7)
-        result = [pos1, pos2]
-        
-        self.assertEqual(blocks, result)
 
 if __name__ == '__main__':
     unittest.main()

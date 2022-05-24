@@ -132,27 +132,27 @@ class GameState:
         print(f'Remaining moves: {self.remaining_moves}')
         # print('Board Score: ', self.score)
 
-        board = [[i for i in row] for row in self.state]
-        if moves:
-            for move in moves:
-                # if move['depth'] > 0:
-                board[move.row][move.col] = move.depth
+        # board = [[i for i in row] for row in self.state]
+        # if moves:
+        #     for move in moves:
+        #         # if move['depth'] > 0:
+        #         board[move.row][move.col] = move.depth
 
-        headers = '0a1b2c3d4e5f6g7h8'
-        print('    ', end='')
-        for ch in headers:
-            print(ch + '  ', end='')
-        print()
-        print('   --------------------------------------------------')
-        for i, row in enumerate(board):
-            print(headers[i] + ' | ', end='')
-            for j, item in enumerate(row):
-                if item != ' ':
-                    print(item, end="")
-                else:
-                    print(' ', end="")
-                print('  ', end='')
-            print()
+        # headers = '0a1b2c3d4e5f6g7h8'
+        # print('    ', end='')
+        # for ch in headers:
+        #     print(ch + '  ', end='')
+        # print()
+        # print('   --------------------------------------------------')
+        # for i, row in enumerate(board):
+        #     print(headers[i] + ' | ', end='')
+        #     for j, item in enumerate(row):
+        #         if item != ' ':
+        #             print(item, end="")
+        #         else:
+        #             print(' ', end="")
+        #         print('  ', end='')
+        #     print()
 
 
 def sort_by_distance(val):
