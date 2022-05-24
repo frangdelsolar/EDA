@@ -1,5 +1,6 @@
 import unittest
 from game_state import *
+from wall import Wall
 import board_states as boards
 from position import Position, append_pos, rotate_moves
 
@@ -257,23 +258,89 @@ class TestGameState(unittest.TestCase):
         self.assertEqual(new_game.opponent_distances, [7, 8, 6])
         self.assertAlmostEqual(new_game.score, 0.012499999999999997)
 
-    def test_move_minimax(self):
-        move = self.game.move_minimax(2)
-        result = {
-            'from_row': 0, 
-            'from_col': 1, 
-            'to_row': 0, 
-            'to_col': 0, 
-            'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004', 
-            'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
-        }
-        self.game.show()
-        print(move)
-        self.assertEqual(move, result)
+    # def test_move_minimax(self):
+    #     move = self.game.move_minimax(2)
+    #     result = {
+    #         'from_row': 0, 
+    #         'from_col': 1, 
+    #         'to_row': 0, 
+    #         'to_col': 0, 
+    #         'game_id': 'ab16e71c-caeb-11eb-975e-0242c0a80004', 
+    #         'turn_token': '087920d0-0e6b-4716-9e77-add550a006aa'
+    #     }
+    #     # self.game.show()
+    #     # print(move)
+    #     self.assertEqual(move, result)
 
     def test_get_possible_moves(self):
-        print('Not yet implemented')
+        # print('Not yet implemented')
         return False
+
+    def test_can_place_wall(self):
+        # print('Test Game State Can Place Wall')
+        turn_token = 'token123'
+        game_id = 'game123'
+        
+        w1 = Wall(0, 14, turn_token, game_id)
+
+        w1.orientation = 'v'
+        w1v = can_place_wall(w1, self.decoded)
+        self.assertFalse(w1v)
+
+        w1.orientation = 'h'
+        w1h = can_place_wall(w1, self.decoded)
+        self.assertTrue(w1h)
+
+        w2 = Wall(2, 14, turn_token, game_id)
+
+        w2.orientation = 'v'
+        w2v = can_place_wall(w2, self.decoded)
+        self.assertFalse(w2v)
+
+        w2.orientation = 'h'
+        w2h = can_place_wall(w2, self.decoded)
+        self.assertTrue(w2h)
+        
+
+        w3 = Wall(10, 0, turn_token, game_id)
+
+        w3.orientation = 'v'
+        w3v = can_place_wall(w3, self.decoded)
+        self.assertTrue(w3v)
+
+        w3.orientation = 'h'
+        w3h = can_place_wall(w3, self.decoded)
+        self.assertFalse(w3h)
+        
+       
+        w4 =  Wall(10, 2, turn_token, game_id)
+
+        w4.orientation = 'v'
+        w4v = can_place_wall(w4, self.decoded)
+        self.assertTrue(w4v)
+
+        w4.orientation = 'h'
+        w4h = can_place_wall(w4, self.decoded)
+        self.assertFalse(w4h)
+     
+        w5 =  Wall(0, 0, turn_token, game_id)
+        
+        w5.orientation = 'v'
+        w5v = can_place_wall(w5, self.decoded)
+        self.assertTrue(w5v)
+
+        w5.orientation = 'h'
+        w5h = can_place_wall(w5, self.decoded)
+        self.assertTrue(w5h)
+
+    # def test_new_wall(self):
+    #     self.game.new_wall()
+
+    def test_index_of_range(self):
+        data = {"side": "S", "score_2": 2635.0, "board": "      N N   N    -*- -*- -*-   -*-         |         -*-    *                |       -*-   -*-         |                *  -*-           |                   -*-                             -*-                                                                 -*-         -*-  S S       S    ", "remaining_moves": 31.0, "score_1": 3816.0, "player_1": "frangdelsolar@gmail.com", "player_2": "frangdelsolar@gmail.com", "walls": 1.0, "turn_token": "ecf03bbb-3ca6-4e0c-8f34-0cb9b139f56e", "game_id": "1385a7d0-daee-11ec-aef0-7ecdf393f9cc"}
+        game = GameState(data)
+        game.move_shortest()
+        game.new_wall()
 
 if __name__ == '__main__':
     unittest.main()
