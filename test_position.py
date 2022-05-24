@@ -102,6 +102,7 @@ class TestPosition(unittest.TestCase):
         self.assertEqual(len(array), 2)
     
     def test_rotate_moves(self):
+        # print('Test Rotate Move')
         m1 = [
             [1, 2, 3, 4],
             [5, 6, 7, 8],

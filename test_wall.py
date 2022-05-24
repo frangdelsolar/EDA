@@ -14,7 +14,6 @@ class TestPosition(unittest.TestCase):
         wall = Wall(row, col, turn_token, game_id)
         wall.orientation = orientation
 
-
         self.assertEqual(wall.pos.row, row)
         self.assertEqual(wall.pos.col, col)
         self.assertEqual(wall.orientation, orientation)
