@@ -1,3 +1,6 @@
+<a href='https://coveralls.io/github/frangdelsolar/EDA'><img src='https://coveralls.io/repos/github/frangdelsolar/EDA/badge.svg' alt='Coverage Status' /></a>
+
+
 <h1>Quoridor Bot</h1>
 by <strong>Francisco Javier González del Solar</strong>
 
@@ -38,7 +41,6 @@ using the shortest path possible. It is implemented a search algorithm that trav
 <p>The result of this approach was better in performance, with only 1 second on average per move. Nevertheless, the final score of the AI was lower than using just the Shortest Path Algorithm.</p>
 
 <h2>Testing</h2>
-<a href='https://coveralls.io/github/frangdelsolar/EDA?branch=main'><img src='https://coveralls.io/repos/github/frangdelsolar/EDA/badge.svg?branch=main' alt='Coverage Status' /></a>
 <p>As a part of the project, it was demanded to aim to the best test coverage possible.</p>
 <p>I implemented a TDD policy to meet the highest score possible. It was a wise decision as it speed up the debugging process for the development of the most complex scenarios such as getting the valid moves for each pawn, calculating the score of the board, anticipating game states, and looking for the best moves to be done.</p>
 
